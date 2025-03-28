@@ -1,0 +1,497 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.hide {
+    display: none !important;
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form-group textarea {
+    resize: none;
+    max-height: 120px;
+    height: 120px;
+    overflow-y: auto;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-success {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.btn-cancel {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #7f8c8d;
+}
+
+/* 登录/注册表单 */
+.auth-container {
+    max-width: 500px;
+    margin: 50px auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.auth-tabs .tab-header {
+    display: flex;
+    background-color: #f8f9fa;
+}
+
+.auth-tabs .tab {
+    flex: 1;
+    text-align: center;
+    padding: 15px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.auth-tabs .tab:hover {
+    background-color: #e9ecef;
+}
+
+.auth-tabs .tab.active {
+    background-color: white;
+    border-bottom: 2px solid #3498db;
+}
+
+.auth-tabs .tab-content {
+    padding: 20px;
+}
+
+.auth-tabs .form {
+    display: none;
+}
+
+.auth-tabs .form.active {
+    display: block;
+}
+
+.auth-tabs .btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* 主应用界面 */
+.app-content {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.app-header {
+    background-color: #3498db;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info span {
+    margin-right: 15px;
+}
+
+/* 数据统计面板 */
+.stats-panel {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.date-selector {
+    margin-bottom: 15px;
+}
+
+.date-selector select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+#custom-date-container {
+    margin-top: 10px;
+}
+
+#custom-date-container input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+
+.stat-cards {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.stat-card {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 18px;
+    color: white;
+}
+
+.stat-card.income .stat-icon {
+    background-color: #2ecc71;
+}
+
+.stat-card.expense .stat-icon {
+    background-color: #e74c3c;
+}
+
+.stat-card.balance .stat-icon {
+    background-color: #3498db;
+}
+
+.stat-info .stat-title {
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+.stat-info .stat-value {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+/* 操作按钮 */
+.action-buttons {
+    padding: 15px 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* 交易记录过滤器 */
+.transaction-filter {
+    padding: 10px 20px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    background-color: #f8f9fa;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+}
+
+.filter-group label {
+    margin-right: 5px;
+}
+
+.filter-group select {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* 交易记录列表 */
+.transaction-list-container {
+    padding: 20px;
+}
+
+.transaction-list-container h2 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.transaction-list {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-item {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+.transaction-item:hover {
+    background-color: #f8f9fa;
+}
+
+.transaction-info {
+    display: flex;
+    align-items: center;
+}
+
+.category-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 18px;
+    color: white;
+}
+
+.income .category-icon {
+    background-color: #2ecc71;
+}
+
+.expense .category-icon {
+    background-color: #e74c3c;
+}
+
+.transaction-details .description {
+    font-size: 16px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.transaction-details .category-date {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-top: 3px;
+}
+
+.transaction-amount {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.income .transaction-amount {
+    color: #2ecc71;
+}
+
+.expense .transaction-amount {
+    color: #e74c3c;
+}
+
+.transaction-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.transaction-actions button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #7f8c8d;
+    transition: color 0.3s;
+}
+
+.transaction-actions button:hover {
+    color: #2c3e50;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 30px;
+    color: #7f8c8d;
+}
+
+/* 弹窗样式 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #2c3e50;
+}
+
+.close-modal {
+    font-size: 24px;
+    font-weight: bold;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-modal:hover {
+    color: #e74c3c;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .stat-cards {
+        flex-direction: column;
+    }
+    
+    .transaction-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .transaction-amount {
+        margin-top: 10px;
+    }
+    
+    .transaction-actions {
+        margin-top: 10px;
+    }
+}
+
+/* 限制特定textarea高度，添加滚动条 */
+.fixed-height-textarea {
+    resize: none;
+    max-height: 120px;
+    height: 120px;
+    overflow-y: auto;
+} 

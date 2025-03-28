@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人记账本</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 登录/注册表单 -->
+        <div id="auth-container" class="auth-container">
+            <div class="auth-tabs">
+                <div class="tab-header">
+                    <div class="tab active" data-tab="login">登录</div>
+                    <div class="tab" data-tab="register">注册</div>
+                </div>
+                
+                <div class="tab-content">
+                    <!-- 登录表单 -->
+                    <div id="login-form" class="form active">
+                        <div class="form-group">
+                            <label for="login-username">用户名</label>
+                            <input type="text" id="login-username" placeholder="请输入用户名">
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">密码</label>
+                            <input type="password" id="login-password" placeholder="请输入密码">
+                        </div>
+                        <button id="login-btn" class="btn btn-primary">登录</button>
+                        <p id="login-error" class="error-message"></p>
+                    </div>
+                    
+                    <!-- 注册表单 -->
+                    <div id="register-form" class="form">
+                        <div class="form-group">
+                            <label for="register-username">用户名</label>
+                            <input type="text" id="register-username" placeholder="3-20位字母、数字、下划线">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">邮箱</label>
+                            <input type="email" id="register-email" placeholder="请输入有效邮箱">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">密码</label>
+                            <input type="password" id="register-password" placeholder="至少6位密码">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-confirm">确认密码</label>
+                            <input type="password" id="register-confirm" placeholder="再次输入密码">
+                        </div>
+                        <button id="register-btn" class="btn btn-primary">注册</button>
+                        <p id="register-error" class="error-message"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主应用界面 -->
+        <div id="app-content" class="app-content hide">
+            <header class="app-header">
+                <h1>个人记账本</h1>
+                <div class="user-info">
+                    <span id="username-display"></span>
+                    <button id="logout-btn" class="btn btn-small">退出</button>
+                </div>
+            </header>
+            
+            <!-- 数据统计面板 -->
+            <div class="stats-panel">
+                <div class="date-selector">
+                    <label for="date-range">选择日期范围:</label>
+                    <select id="date-range">
+                        <option value="month">本月</option>
+                        <option value="quarter">本季度</option>
+                        <option value="year">本年</option>
+                        <option value="custom">自定义范围</option>
+                    </select>
+                    <div id="custom-date-container" class="hide">
+                        <input type="date" id="start-date">
+                        <span>至</span>
+                        <input type="date" id="end-date">
+                        <button id="apply-date" class="btn btn-small">应用</button>
+                    </div>
+                </div>
+                
+                <div class="stat-cards">
+                    <div class="stat-card income">
+                        <div class="stat-icon"><i class="fas fa-arrow-down"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-title">收入</div>
+                            <div class="stat-value" id="income-value">¥0.00</div>
+                        </div>
+                    </div>
+                    <div class="stat-card expense">
+                        <div class="stat-icon"><i class="fas fa-arrow-up"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-title">支出</div>
+                            <div class="stat-value" id="expense-value">¥0.00</div>
+                        </div>
+                    </div>
+                    <div class="stat-card balance">
+                        <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-title">结余</div>
+                            <div class="stat-value" id="balance-value">¥0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 操作按钮 -->
+            <div class="action-buttons">
+                <button id="add-income-btn" class="btn btn-success"><i class="fas fa-plus"></i> 添加收入</button>
+                <button id="add-expense-btn" class="btn btn-danger"><i class="fas fa-minus"></i> 添加支出</button>
+            </div>
+            
+            <!-- 交易记录过滤器 -->
+            <div class="transaction-filter">
+                <div class="filter-group">
+                    <label for="filter-type">类型:</label>
+                    <select id="filter-type">
+                        <option value="all">全部</option>
+                        <option value="income">收入</option>
+                        <option value="expense">支出</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-category">类别:</label>
+                    <select id="filter-category">
+                        <option value="all">全部</option>
+                        <!-- 类别选项将通过JS动态填充 -->
+                    </select>
+                </div>
+                <button id="filter-btn" class="btn btn-small">筛选</button>
+                <button id="reset-filter-btn" class="btn btn-small">重置</button>
+            </div>
+            
+            <!-- 交易记录列表 -->
+            <div class="transaction-list-container">
+                <h2>交易记录</h2>
+                <div id="transaction-list" class="transaction-list">
+                    <!-- 交易记录将通过JS动态填充 -->
+                </div>
+                <div id="empty-list-message" class="empty-message hide">
+                    <p>暂无交易记录，请点击上方按钮添加。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 添加交易记录弹窗 -->
+        <div id="transaction-modal" class="modal hide">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">添加交易记录</h2>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="transaction-form">
+                        <input type="hidden" id="transaction-type">
+                        <div class="form-group">
+                            <label for="transaction-amount">金额</label>
+                            <input type="number" id="transaction-amount" step="0.01" min="0.01" required placeholder="请输入金额">
+                        </div>
+                        <div class="form-group">
+                            <label for="transaction-category">类别</label>
+                            <select id="transaction-category" required>
+                                <!-- 类别选项将通过JS动态填充 -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="transaction-date">日期</label>
+                            <input type="date" id="transaction-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="transaction-description">描述（可选）</label>
+                            <textarea id="transaction-description" class="fixed-height-textarea" rows="3" placeholder="添加备注..."></textarea>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="button" class="btn btn-cancel close-modal">取消</button>
+                            <button type="submit" class="btn btn-primary">保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/app.js"></script>
+</body>
+</html> 
