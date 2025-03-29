@@ -1254,23 +1254,37 @@ function exportTransactions() {
         endDate = dates.endDate;
     }
     
-    // 获取筛选条件
-    const type = document.getElementById('filter-type').value;
-    const categoryId = document.getElementById('filter-category').value;
-    
-    // 构建导出URL
+    // 构建导出URL，不使用原有的筛选条件获取方式，因为UI中可能没有这些元素
     let exportUrl = `${API_URL}/transaction/export.php?user_id=${currentUser.id}&start_date=${startDate}&end_date=${endDate}`;
     
-    if (type !== 'all') {
-        exportUrl += `&type=${type}`;
+    // 获取当前选中的筛选按钮来判断类型
+    const activeTypeButton = document.querySelector('.filter-type-btn.active');
+    if (activeTypeButton) {
+        const type = activeTypeButton.getAttribute('data-type');
+        if (type && type !== 'all') {
+            exportUrl += `&type=${type}`;
+        }
     }
     
-    if (categoryId !== 'all') {
-        exportUrl += `&category_id=${categoryId}`;
+    // 获取选中的类别
+    const selectedCategories = [];
+    document.querySelectorAll('.category-checkbox.selected input').forEach(input => {
+        if (input.value !== 'all') {
+            selectedCategories.push(input.value);
+        }
+    });
+    
+    if (selectedCategories.length > 0) {
+        exportUrl += `&category_ids=${selectedCategories.join(',')}`;
     }
+    
+    console.log('导出URL:', exportUrl); // 添加调试信息
     
     // 在新窗口中打开导出URL以触发下载
     window.open(exportUrl, '_blank');
+    
+    // 显示导出成功提示
+    showToast('正在导出数据，请稍候...', 'success');
 }
 
 /**

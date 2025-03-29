@@ -427,4 +427,69 @@ class Transaction {
             return ['error' => '获取趋势统计数据失败: ' . $e->getMessage()];
         }
     }
+
+    // 获取交易记录（用于导出）
+    public function getTransactions() {
+        // 构建基本查询
+        $query = "SELECT t.id, t.type, t.amount, t.category_id, c.name as category_name, 
+                  t.transaction_date, t.description
+                  FROM transactions t
+                  LEFT JOIN categories c ON t.category_id = c.id
+                  WHERE t.user_id = :user_id";
+        
+        // 添加日期范围条件
+        if (!empty($this->start_date) && !empty($this->end_date)) {
+            $query .= " AND t.transaction_date BETWEEN :start_date AND :end_date";
+        }
+        
+        // 添加类型条件
+        if (!empty($this->type) && $this->type != 'all') {
+            $query .= " AND t.type = :type";
+        }
+        
+        // 添加类别条件
+        if (!empty($this->category_ids)) {
+            $category_ids_array = explode(',', $this->category_ids);
+            if (!empty($category_ids_array)) {
+                $placeholders = implode(',', array_fill(0, count($category_ids_array), '?'));
+                $query .= " AND t.category_id IN ($placeholders)";
+            }
+        }
+        
+        // 添加排序
+        $query .= " ORDER BY t.transaction_date DESC";
+        
+        // 准备查询
+        $stmt = $this->db->prepare($query);
+        
+        // 绑定参数
+        $stmt->bindParam(':user_id', $this->user_id);
+        
+        if (!empty($this->start_date) && !empty($this->end_date)) {
+            $stmt->bindParam(':start_date', $this->start_date);
+            $stmt->bindParam(':end_date', $this->end_date);
+        }
+        
+        if (!empty($this->type) && $this->type != 'all') {
+            $stmt->bindParam(':type', $this->type);
+        }
+        
+        // 绑定类别ID参数
+        if (!empty($this->category_ids)) {
+            $category_ids_array = explode(',', $this->category_ids);
+            if (!empty($category_ids_array)) {
+                $param_index = 1;
+                foreach ($category_ids_array as $category_id) {
+                    $stmt->bindValue($param_index++, $category_id);
+                }
+            }
+        }
+        
+        // 执行查询
+        if ($stmt->execute()) {
+            return $stmt;
+        }
+        
+        return false;
+    }
 } 
