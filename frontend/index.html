@@ -67,11 +67,17 @@
                     <button id="logout-btn" class="btn btn-small">退出</button>
                 </div>
             </header>
-            
+
+            <!-- 操作按钮 -->
+            <div class="action-buttons">
+                <button id="add-income-btn" class="btn btn-success"><i class="fas fa-plus"></i> 添加收入</button>
+                <button id="add-expense-btn" class="btn btn-danger"><i class="fas fa-minus"></i> 添加支出</button>
+                <button id="export-btn" class="btn btn-primary"><i class="fas fa-download"></i> 导出记录</button>
+            </div>
+
             <!-- 数据统计面板 -->
             <div class="stats-panel">
                 <div class="date-selector">
-                    <label for="date-range">选择日期范围:</label>
                     <select id="date-range">
                         <option value="month">本月</option>
                         <option value="quarter">本季度</option>
@@ -111,12 +117,7 @@
                 </div>
             </div>
             
-            <!-- 操作按钮 -->
-            <div class="action-buttons">
-                <button id="add-income-btn" class="btn btn-success"><i class="fas fa-plus"></i> 添加收入</button>
-                <button id="add-expense-btn" class="btn btn-danger"><i class="fas fa-minus"></i> 添加支出</button>
-                <button id="export-btn" class="btn btn-primary"><i class="fas fa-download"></i> 导出记录</button>
-            </div>
+            
             
             
             <!-- 在交易记录列表前添加统计图表区域 -->
@@ -157,15 +158,14 @@
                 </div>
             </div>
             
-            <!-- 交易记录过滤器 -->
-            <div class="transaction-filter">
-                <button id="filter-btn" class="btn btn-primary">筛选</button>
-                <button id="reset-filter-btn" class="btn btn-cancel" onclick="resetFilterModal()">重置</button>
-            </div>
+            
             
             <!-- 交易记录列表 -->
             <div class="transaction-list-container">
                 <h2>交易记录</h2>
+                <!-- 交易记录过滤器 -->
+                <button id="filter-btn" class="btn btn-primary">筛选</button>
+                <button id="reset-filter-btn" class="btn btn-cancel" onclick="resetFilterModal()">重置</button>
                 <div id="transaction-list" class="transaction-list">
                     <div class="transaction-item income">
                         <div class="transaction-info">
@@ -218,8 +218,8 @@
                             <textarea id="transaction-description" class="fixed-height-textarea" rows="3" placeholder="添加备注..."></textarea>
                         </div>
                         <div class="form-buttons">
-                            <button type="button" class="btn btn-cancel">取消</button>
                             <button type="submit" class="btn btn-primary">保存</button>
+                            <button type="button" class="btn btn-cancel">取消</button>
                         </div>
                     </form>
                 </div>
@@ -230,7 +230,7 @@
     <script src="js/app.js"></script>
     <script src="js/charts.js"></script>
     
-    <!-- 将原有的确认弹窗替换为新的结构 -->
+    <!-- 确认删除弹窗 -->
     <div id="confirm-dialog" class="confirm-dialog hide">
         <div class="modal-content">
             <div class="modal-header">
@@ -240,8 +240,8 @@
                 <p>确定要删除这条记录吗？</p>
             </div>
             <div class="modal-footer">
+                <button id="confirm-ok" class="btn btn-primary">确定</button>
                 <button id="confirm-cancel" class="btn btn-cancel">取消</button>
-                <button id="confirm-ok" class="btn btn-danger">确定</button>
             </div>
         </div>
     </div>

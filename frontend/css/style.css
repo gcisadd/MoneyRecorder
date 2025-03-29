@@ -192,7 +192,6 @@ body {
 /* 数据统计面板 */
 .stats-panel {
     padding: 20px;
-    background-color: #f8f9fa;
     border-bottom: 1px solid #ddd;
 }
 
@@ -313,9 +312,9 @@ body {
 
 .transaction-list {
     border-radius: 8px;
-    overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    height: 400px;
+    min-height: 120px;
+    max-height: 480px;
     overflow-y: auto;
 }
 
@@ -409,6 +408,7 @@ body {
 }
 
 .empty-message {
+    height: 120px;
     text-align: center;
     padding: 30px;
     color: #7f8c8d;
@@ -471,7 +471,7 @@ body {
 
 .form-buttons {
     display: flex;
-    justify-content: flex-end;
+    justify-content: left;
     gap: 10px;
     margin-top: 20px;
 }
@@ -714,7 +714,31 @@ body {
 }
 
 .confirm-dialog .btn {
-    min-width: 80px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.confirm-dialog .btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.confirm-dialog .btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.confirm-dialog .btn-cancel {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.confirm-dialog .btn-cancel:hover {
+    background-color: #7f8c8d;
 }
 
 /* 提示弹窗样式 */
