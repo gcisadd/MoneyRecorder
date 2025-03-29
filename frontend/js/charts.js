@@ -168,7 +168,7 @@ function renderTypeChart(data) {
     
     // 准备数据
     const chartData = {
-        labels: ['其他支出', '交通'],  // 修改标签名称
+        labels: ['收入', '支出'],  // 修改标签名称
         datasets: [{
             data: [data.income, data.expense],
             backgroundColor: [chartColors.income, chartColors.expense],
@@ -186,6 +186,20 @@ function renderTypeChart(data) {
                 labels: {
                     font: {
                         size: 14
+                    },
+                    generateLabels: function(chart) {
+                        const data = chart.data;
+                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        return data.labels.map((label, i) => {
+                            const value = data.datasets[0].data[i];
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return {
+                                text: `${label}: ${percentage}%`,
+                                fillStyle: data.datasets[0].backgroundColor[i],
+                                hidden: isNaN(data.datasets[0].data[i]),
+                                index: i
+                            };
+                        });
                     }
                 }
             },
@@ -438,11 +452,21 @@ function renderTrendChart(data) {
             }
         },
         scales: {
+            x: {
+                display: true,
+                title: {
+                    display: true,
+                    text: '日期',
+                    font: {
+                        size: 18
+                    }
+                }
+            },
             y: {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: '金额 (元)',
+                    text: '金额',
                     font: {
                         size: 18
                     }

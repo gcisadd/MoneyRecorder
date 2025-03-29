@@ -123,17 +123,12 @@
             <div class="charts-container">
                 <h2>收支分析</h2>
                 <div class="chart-tabs">
-                    <button class="chart-tab active" data-chart="type">收支类型</button>
-                    <button class="chart-tab" data-chart="category">类别分布</button>
+                    <button class="chart-tab active" data-chart="category">类别分布</button>
+                    <button class="chart-tab" data-chart="type">收支类型</button>
                     <button class="chart-tab" data-chart="trend">收支趋势</button>
                 </div>
                 <div class="charts-content">
-                    <div class="chart-panel active" id="type-chart-panel">
-                        <div class="chart-wrapper">
-                            <canvas id="type-chart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-panel" id="category-chart-panel">
+                    <div class="chart-panel active" id="category-chart-panel">
                         <div class="chart-row">
                             <div class="chart-column">
                                 <h3>收入类别</h3>
@@ -147,6 +142,11 @@
                                     <canvas id="expense-category-chart"></canvas>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="chart-panel" id="type-chart-panel">
+                        <div class="chart-wrapper">
+                            <canvas id="type-chart"></canvas>
                         </div>
                     </div>
                     <div class="chart-panel" id="trend-chart-panel">
