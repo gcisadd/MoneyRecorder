@@ -601,7 +601,7 @@ function showTransactionModal(type, transaction = null) {
     const form = document.getElementById('transaction-form');
     
     // 设置标题和类型
-    modalTitle.textContent = transaction ? '编辑交易记录' : (type === 'income' ? '添加收入' : '添加支出');
+    modalTitle.textContent = transaction ? '编辑交易记录' : (type === 'income' ? '添加收入记录' : '添加支出记录');
     document.getElementById('transaction-type').value = type;
     
     // 加载对应类型的类别

@@ -315,6 +315,8 @@ body {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: 400px;
+    overflow-y: auto;
 }
 
 .transaction-item {
@@ -524,7 +526,7 @@ body {
     border: none;
     border-bottom: 2px solid transparent;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 500;
     color: #7f8c8d;
     transition: all 0.3s;

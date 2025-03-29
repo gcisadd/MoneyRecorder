@@ -168,7 +168,7 @@ function renderTypeChart(data) {
     
     // 准备数据
     const chartData = {
-        labels: ['收入', '支出'],
+        labels: ['其他支出', '交通'],  // 修改标签名称
         datasets: [{
             data: [data.income, data.expense],
             backgroundColor: [chartColors.income, chartColors.expense],
@@ -182,20 +182,20 @@ function renderTypeChart(data) {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: 'bottom'
-            },
-            title: {
-                display: true,
-                text: '收支比例'
+                position: 'bottom',
+                labels: {
+                    font: {
+                        size: 14
+                    }
+                }
             },
             tooltip: {
                 callbacks: {
                     label: function(context) {
-                        const label = context.label || '';
-                        const value = context.formattedValue;
+                        const value = context.parsed;
                         const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                        const percentage = Math.round((context.raw / total) * 100);
-                        return `${label}: ${value}元 (${percentage}%)`;
+                        const percentage = ((value / total) * 100).toFixed(1);
+                        return `${context.label}: ${value}元 (${percentage}%)`;
                     }
                 }
             }
@@ -205,6 +205,7 @@ function renderTypeChart(data) {
     // 创建或更新图表
     if (typeChart) {
         typeChart.data = chartData;
+        typeChart.options = options;  // 更新配置
         typeChart.update();
     } else {
         typeChart = new Chart(ctx, {
@@ -272,7 +273,10 @@ function renderSingleCategoryChart(type, categoryData, canvasId) {
     
     // 准备数据
     const labels = categoryData.map(item => item.category_name);
-    const values = categoryData.map(item => item.total);
+    const values = categoryData.map(item => parseFloat(item.total)); // 确保转换为数字
+    
+    // 计算总额
+    const total = values.reduce((sum, value) => sum + value, 0);
     
     // 使用背景色数组，确保有足够的颜色
     const backgroundColors = [];
@@ -299,18 +303,35 @@ function renderSingleCategoryChart(type, categoryData, canvasId) {
                 labels: {
                     boxWidth: 15,
                     font: {
-                        size: 10
+                        size: 14
+                    },
+                    // 在图例中显示百分比
+                    generateLabels: function(chart) {
+                        const data = chart.data;
+                        if (data.labels.length && data.datasets.length) {
+                            return data.labels.map((label, i) => {
+                                const value = data.datasets[0].data[i];
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return {
+                                    text: `${label}: ${percentage}%`,
+                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                    hidden: isNaN(data.datasets[0].data[i]),
+                                    index: i,
+                                    strokeStyle: '#fff',
+                                    lineWidth: 2
+                                };
+                            });
+                        }
+                        return [];
                     }
                 }
             },
             tooltip: {
                 callbacks: {
                     label: function(context) {
-                        const label = context.label || '';
-                        const value = context.formattedValue;
-                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                        const percentage = Math.round((context.raw / total) * 100);
-                        return `${label}: ${value}元 (${percentage}%)`;
+                        const value = context.raw;
+                        const percentage = ((value / total) * 100).toFixed(1);
+                        return `${context.label}: ¥${value.toFixed(2)} (${percentage}%)`;
                     }
                 }
             }
@@ -322,6 +343,7 @@ function renderSingleCategoryChart(type, categoryData, canvasId) {
     
     if (chartInstance) {
         chartInstance.data = chartData;
+        chartInstance.options = options;
         chartInstance.update();
     } else {
         const newChart = new Chart(ctx, {
@@ -386,7 +408,7 @@ function renderTrendChart(data) {
                 borderColor: chartColors.income,
                 backgroundColor: `${chartColors.income}20`,
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
             },
             {
                 label: '支出',
@@ -394,7 +416,7 @@ function renderTrendChart(data) {
                 borderColor: chartColors.expense,
                 backgroundColor: `${chartColors.expense}20`,
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
             }
         ]
     };
@@ -409,7 +431,10 @@ function renderTrendChart(data) {
             },
             title: {
                 display: true,
-                text: '收支趋势'
+                text: '收支趋势',
+                font: {
+                    size: 18
+                }
             }
         },
         scales: {
@@ -417,7 +442,10 @@ function renderTrendChart(data) {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: '金额 (元)'
+                    text: '金额 (元)',
+                    font: {
+                        size: 18
+                    }
                 }
             }
         }
