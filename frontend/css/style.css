@@ -5,6 +5,14 @@
     box-sizing: border-box;
 }
 
+.web-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3498db;
+    color: white;
+}
+
 body {
     font-family: 'Microsoft YaHei', Arial, sans-serif;
     background-color: #f5f5f5;
@@ -193,8 +201,13 @@ html, body {
 }
 
 .app-header h1 {
+    margin-left: 10px;
     font-size: 24px;
-    margin: 0;
+}
+
+.logo {
+    width: 40px; /* 根据需要调整logo大小 */
+    height: 40px; /* 根据需要调整logo大小 */
 }
 
 .user-info {
