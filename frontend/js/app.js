@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('transaction-form').addEventListener('submit', function(e) {
         e.preventDefault();
         saveTransaction();
+        resetFilterModal();
     });
     
     // 打开筛选弹窗按钮
@@ -741,6 +742,10 @@ function showTransactionModal(type, transaction = null) {
  */
 function closeModal() {
     document.getElementById('transaction-modal').classList.add('hide');
+}
+
+function closeFilterModal() {
+    document.getElementById('filter-modal').classList.add('hide');
 }
 
 /**

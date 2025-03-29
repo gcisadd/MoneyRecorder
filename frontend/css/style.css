@@ -458,7 +458,7 @@ body {
     color: #7f8c8d;
     cursor: pointer;
     transition: color 0.3s;
-    display: none;
+    /* display: none; */
 }
 
 .close-modal:hover {
@@ -879,7 +879,7 @@ body {
 .modal-footer {
     padding: 15px 20px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: left;
     gap: 10px;
     background-color: #f8f9fa;
     border-top: 1px solid #ddd;
