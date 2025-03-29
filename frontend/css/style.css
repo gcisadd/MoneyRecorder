@@ -375,7 +375,7 @@ body {
     font-size: 18px;
     font-weight: 500;
     text-align: right;
-    min-width: 120px;
+    min-width: 100px;
 }
 
 .income .transaction-amount {
@@ -394,6 +394,7 @@ body {
 }
 
 .transaction-actions button {
+    font-size: 20px;
     border: none;
     background: none;
     cursor: pointer;
@@ -651,4 +652,117 @@ body {
     outline: none;
     border-color: #3498db;
     box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* 确认弹窗样式 */
+.confirm-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.confirm-dialog .modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.confirm-dialog .modal-header {
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.confirm-dialog .modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #2c3e50;
+}
+
+.confirm-dialog .modal-body {
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.confirm-dialog .modal-body p {
+    margin: 0;
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+.confirm-dialog .modal-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #ddd;
+}
+
+.confirm-dialog .btn {
+    min-width: 80px;
+}
+
+/* 提示弹窗样式 */
+.toast-alert {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffffff;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    z-index: 2000;
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.toast-alert.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast-icon {
+    color: #2ecc71;
+    font-size: 24px;
+}
+
+.toast-message {
+    color: #2c3e50;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* 不同类型的提示样式 */
+.toast-alert.success .toast-icon {
+    color: #2ecc71;
+}
+
+.toast-alert.error .toast-icon {
+    color: #e74c3c;
+}
+
+.toast-alert.error .toast-icon i {
+    content: "\f057"; /* Font Awesome 错误图标 */
 } 

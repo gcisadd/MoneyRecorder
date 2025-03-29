@@ -197,6 +197,10 @@
                         </div>
                     </div>
                     <!-- 其他交易记录 -->
+                     <!-- 输出调试信息 -->
+                     <script>
+                        console.log('transaction-list:', document.getElementById('transaction-list'));
+                     </script>
                 </div>
                 <div id="empty-list-message" class="empty-message hide">
                     <p>暂无交易记录</p>
@@ -245,18 +249,29 @@
     <script src="js/app.js"></script>
     <script src="js/charts.js"></script>
     
+    <!-- 将原有的确认弹窗替换为新的结构 -->
+    <div id="confirm-dialog" class="confirm-dialog hide">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>确认删除</h2>
+            </div>
+            <div class="modal-body">
+                <p>确定要删除这条记录吗？</p>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-cancel" class="btn btn-cancel">取消</button>
+                <button id="confirm-ok" class="btn btn-danger">确定</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- 自定义提示弹窗 -->
-    <div id="custom-alert" class="modal hide">
-        <div class="modal-content alert-content">
-            <div class="alert-header">
-                <h2 id="alert-title">提示</h2>
+    <div id="toast-alert" class="toast-alert hide">
+        <div class="toast-content">
+            <div class="toast-icon">
+                <i class="fas fa-check-circle"></i>
             </div>
-            <div class="alert-body">
-                <p id="alert-message">操作成功</p>
-            </div>
-            <div class="alert-footer">
-                <button id="alert-confirm" class="btn btn-primary">确定</button>
-            </div>
+            <div class="toast-message"></div>
         </div>
     </div>
 </body>

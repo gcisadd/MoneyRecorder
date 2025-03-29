@@ -563,7 +563,7 @@ function createTransactionElement(transaction) {
             </div>
             <div class="transaction-details">
                 <div class="description">${transaction.description || transaction.category_name}</div>
-                <div class="category-date">${transaction.category_name} · ${formatDateForDisplay(transaction.transaction_date)}</div>
+                <div class="category-date">${formatDateForDisplay(transaction.transaction_date)}</div>
             </div>
         </div>
         <div class="transaction-amount">
@@ -642,6 +642,35 @@ function closeModal() {
 }
 
 /**
+ * 显示提示信息
+ * 
+ * @input string message 提示信息
+ * @input string type 提示类型 (success/error)
+ * @process 显示提示弹窗并自动消失
+ * @output 无
+ */
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast-alert');
+    const messageEl = toast.querySelector('.toast-message');
+    const iconEl = toast.querySelector('.toast-icon i');
+    
+    // 设置消息
+    messageEl.textContent = message;
+    
+    // 设置图标和样式
+    toast.className = `toast-alert ${type}`;
+    iconEl.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    
+    // 显示提示
+    toast.classList.add('show');
+    
+    // 2秒后自动消失
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2000);
+}
+
+/**
  * 保存交易记录
  * 
  * @input 无
@@ -703,7 +732,7 @@ function saveTransaction() {
     .then(response => response.json())
     .then(result => {
         if (result.error) {
-            showAlert(`保存失败: ${result.error}`, '错误');
+            showToast(result.error, 'error');
             return;
         }
         
@@ -718,11 +747,11 @@ function saveTransaction() {
             loadTransactionsByDateRange(dateRange);
         }
         
-        // 提示成功
-        showAlert(transactionId ? '更新成功' : '添加成功', '成功');
+        // 显示成功提示
+        showToast(transactionId ? '记录更新成功' : '记录添加成功', 'success');
     })
     .catch(error => {
-        showAlert(`请求失败: ${error.message}`, '错误');
+        showToast(error.message, 'error');
     });
 }
 
@@ -738,40 +767,71 @@ function editTransaction(transaction) {
 }
 
 /**
+ * 显示确认弹窗
+ * 
+ * @input function onConfirm 确认回调函数
+ * @process 显示确认弹窗并绑定事件
+ * @output 用户确认或取消的结果
+ */
+function showConfirmDialog(onConfirm) {
+    const dialog = document.getElementById('confirm-dialog');
+    const confirmBtn = document.getElementById('confirm-ok');
+    const cancelBtn = document.getElementById('confirm-cancel');
+    
+    dialog.classList.remove('hide');
+    
+    // 确认按钮事件
+    const handleConfirm = () => {
+        dialog.classList.add('hide');
+        confirmBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+        onConfirm();
+    };
+    
+    // 取消按钮事件
+    const handleCancel = () => {
+        dialog.classList.add('hide');
+        confirmBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+    };
+    
+    confirmBtn.addEventListener('click', handleConfirm);
+    cancelBtn.addEventListener('click', handleCancel);
+}
+
+/**
  * 删除交易记录
  * 
  * @input int id 交易记录ID
- * @process 发送删除请求
+ * @process 确认后发送删除请求
  * @output 成功刷新数据
  */
 function deleteTransaction(id) {
-    if (!confirm('确定要删除这条记录吗？')) {
-        return;
-    }
-    
-    fetch(`${API_URL}/transaction/delete.php?user_id=${currentUser.id}&id=${id}`, {
-        method: 'DELETE'
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.error) {
-            showAlert(`删除失败: ${result.error}`, '错误');
-            return;
-        }
-        
-        // 刷新数据
-        const dateRange = document.getElementById('date-range').value;
-        if (dateRange === 'custom') {
-            loadTransactionsByCustomDateRange();
-        } else {
-            loadTransactionsByDateRange(dateRange);
-        }
-        
-        // 提示成功
-        showAlert('删除成功', '成功');
-    })
-    .catch(error => {
-        showAlert(`请求失败: ${error.message}`, '错误');
+    showConfirmDialog(() => {
+        fetch(`${API_URL}/transaction/delete.php?user_id=${currentUser.id}&id=${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.error) {
+                showToast(result.error, 'error');
+                return;
+            }
+            
+            // 刷新数据
+            const dateRange = document.getElementById('date-range').value;
+            if (dateRange === 'custom') {
+                loadTransactionsByCustomDateRange();
+            } else {
+                loadTransactionsByDateRange(dateRange);
+            }
+            
+            // 显示成功提示
+            showToast('记录删除成功', 'success');
+        })
+        .catch(error => {
+            showToast(error.message, 'error');
+        });
     });
 }
 
