@@ -128,6 +128,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const dd = String(today.getDate()).padStart(2, '0');
     const formattedDate = `${yyyy}-${mm}-${dd}`;
     document.getElementById('transaction-date').value = formattedDate;
+    
+    // 导出按钮事件监听
+    document.getElementById('export-btn').addEventListener('click', function() {
+        exportTransactions();
+    });
+
+    // 在DOMContentLoaded事件监听器中添加
+    // 大约在第87行附近，其他事件监听之后
+    document.getElementById('alert-confirm').addEventListener('click', function() {
+        document.getElementById('custom-alert').classList.add('hide');
+    });
 });
 
 /**
@@ -148,6 +159,15 @@ function initApp() {
         loadCategories();
         // 默认加载本月数据
         loadTransactionsByDateRange('month');
+        
+        // 初始化图表功能
+        if (window.chartUtils) {
+            window.chartUtils.initCharts();
+            // 延迟一点时间，确保交易数据已加载
+            setTimeout(() => {
+                window.chartUtils.updateAllCharts();
+            }, 500);
+        }
     }
 }
 
@@ -225,7 +245,7 @@ function register(username, email, password) {
             document.getElementById('register-confirm').value = '';
             
             // 显示注册成功信息并切换到登录表单
-            alert('注册成功，请登录');
+            showAlert('注册成功，请登录');
             
             // 切换到登录标签
             document.querySelectorAll('.tab, .form').forEach(el => {
@@ -414,12 +434,12 @@ function loadTransactionsByCustomDateRange() {
     const endDate = document.getElementById('end-date').value;
     
     if (!startDate || !endDate) {
-        alert('请选择开始和结束日期');
+        showAlert('请选择开始和结束日期');
         return;
     }
     
     if (startDate > endDate) {
-        alert('开始日期不能大于结束日期');
+        showAlert('开始日期不能大于结束日期');
         return;
     }
     
@@ -431,14 +451,12 @@ function loadTransactionsByCustomDateRange() {
  * 
  * @input string startDate 开始日期
  * @input string endDate 结束日期
- * @process 从API获取交易记录和统计数据
- * @output 显示交易记录和统计数据
+ * @process 从API获取交易记录
+ * @output 显示交易记录
  */
 function loadTransactions(startDate, endDate) {
-    // 构建API URL，包含用户ID和日期范围
     const transactionsUrl = `${API_URL}/transaction/list.php?user_id=${currentUser.id}&start_date=${startDate}&end_date=${endDate}`;
     
-    // 获取交易记录
     fetch(transactionsUrl)
     .then(response => response.json())
     .then(data => {
@@ -450,8 +468,11 @@ function loadTransactions(startDate, endDate) {
         transactions = data;
         displayTransactions(transactions);
         
-        // 获取统计数据
+        // 更新统计数据和图表
         loadStats(startDate, endDate);
+        if (window.chartUtils) {
+            window.chartUtils.updateAllCharts();
+        }
     })
     .catch(error => {
         console.error('加载交易记录请求失败:', error);
@@ -488,11 +509,11 @@ function loadStats(startDate, endDate) {
 }
 
 /**
- * 显示交易记录列表
+ * 显示交易记录
  * 
  * @input array transactions 交易记录数组
- * @process 创建交易记录DOM元素
- * @output 在页面上显示交易记录
+ * @process 创建交易记录DOM元素并插入到页面
+ * @output 显示交易记录
  */
 function displayTransactions(transactions) {
     const transactionList = document.getElementById('transaction-list');
@@ -642,17 +663,17 @@ function saveTransaction() {
     
     // 验证数据
     if (!data.amount || data.amount <= 0) {
-        alert('请输入有效金额');
+        showAlert('请输入有效金额');
         return;
     }
     
     if (!data.category_id) {
-        alert('请选择类别');
+        showAlert('请选择类别');
         return;
     }
     
     if (!data.transaction_date) {
-        alert('请选择日期');
+        showAlert('请选择日期');
         return;
     }
     
@@ -682,7 +703,7 @@ function saveTransaction() {
     .then(response => response.json())
     .then(result => {
         if (result.error) {
-            alert(`保存失败: ${result.error}`);
+            showAlert(`保存失败: ${result.error}`, '错误');
             return;
         }
         
@@ -698,10 +719,10 @@ function saveTransaction() {
         }
         
         // 提示成功
-        alert(transactionId ? '更新成功' : '添加成功');
+        showAlert(transactionId ? '更新成功' : '添加成功', '成功');
     })
     .catch(error => {
-        alert(`请求失败: ${error.message}`);
+        showAlert(`请求失败: ${error.message}`, '错误');
     });
 }
 
@@ -734,7 +755,7 @@ function deleteTransaction(id) {
     .then(response => response.json())
     .then(result => {
         if (result.error) {
-            alert(`删除失败: ${result.error}`);
+            showAlert(`删除失败: ${result.error}`, '错误');
             return;
         }
         
@@ -747,10 +768,10 @@ function deleteTransaction(id) {
         }
         
         // 提示成功
-        alert('删除成功');
+        showAlert('删除成功', '成功');
     })
     .catch(error => {
-        alert(`请求失败: ${error.message}`);
+        showAlert(`请求失败: ${error.message}`, '错误');
     });
 }
 
@@ -773,7 +794,7 @@ function filterTransactions() {
     }
     
     if (categoryId !== 'all') {
-        filtered = filtered.filter(t => t.category_id == categoryId);
+        filtered = filtered.filter(t => t.category_id.toString() === categoryId);
     }
     
     // 显示筛选结果
@@ -819,4 +840,85 @@ function formatDate(date) {
 function formatDateForDisplay(dateString) {
     const date = new Date(dateString);
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+}
+
+/**
+ * 导出交易记录
+ * 
+ * @input 无
+ * @process 获取当前筛选条件并导出数据
+ * @output 下载CSV文件
+ */
+function exportTransactions() {
+    if (!currentUser) return;
+    
+    // 获取当前日期范围
+    const dateRange = document.getElementById('date-range').value;
+    let startDate, endDate;
+    
+    if (dateRange === 'custom') {
+        startDate = document.getElementById('start-date').value;
+        endDate = document.getElementById('end-date').value;
+        
+        if (!startDate || !endDate) {
+            showAlert('请选择开始和结束日期');
+            return;
+        }
+    } else {
+        const dates = getDateRangeFromType(dateRange);
+        startDate = dates.startDate;
+        endDate = dates.endDate;
+    }
+    
+    // 获取筛选条件
+    const type = document.getElementById('filter-type').value;
+    const categoryId = document.getElementById('filter-category').value;
+    
+    // 构建导出URL
+    let exportUrl = `${API_URL}/transaction/export.php?user_id=${currentUser.id}&start_date=${startDate}&end_date=${endDate}`;
+    
+    if (type !== 'all') {
+        exportUrl += `&type=${type}`;
+    }
+    
+    if (categoryId !== 'all') {
+        exportUrl += `&category_id=${categoryId}`;
+    }
+    
+    // 在新窗口中打开导出URL以触发下载
+    window.open(exportUrl, '_blank');
+}
+
+/**
+ * 获取指定日期范围
+ * 
+ * @input string type 日期范围类型
+ * @process 根据类型获取日期范围
+ * @output object 包含开始日期和结束日期的对象
+ */
+/**
+ * 显示自定义提示弹窗
+ * 
+ * @input string message 提示信息
+ * @input string title 可选，标题
+ * @process 显示居中弹窗
+ * @output 无
+ */
+function showAlert(message, title = '提示') {
+    // 设置弹窗内容
+    document.getElementById('alert-title').textContent = title;
+    document.getElementById('alert-message').textContent = message;
+    
+    // 显示弹窗
+    const alertModal = document.getElementById('custom-alert');
+    alertModal.classList.remove('hide');
+    
+    // 添加确定按钮事件监听
+    const confirmBtn = document.getElementById('alert-confirm');
+    const handleConfirm = function() {
+        alertModal.classList.add('hide');
+        confirmBtn.removeEventListener('click', handleConfirm);
+    };
+    
+    confirmBtn.addEventListener('click', handleConfirm);
 } 

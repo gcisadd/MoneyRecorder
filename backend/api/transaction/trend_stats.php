@@ -1,6 +1,6 @@
 <?php
 /**
- * 获取交易记录列表API
+ * 获取收支趋势统计API
  */
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -29,32 +29,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 // 用户验证
 $user_id = authenticateUser();
 
-// 获取过滤参数
-$filters = [];
-
-if (!empty($_GET['start_date'])) {
-    $filters['start_date'] = $_GET['start_date'];
-}
-
-if (!empty($_GET['end_date'])) {
-    $filters['end_date'] = $_GET['end_date'];
-}
-
-if (!empty($_GET['type']) && in_array($_GET['type'], ['income', 'expense'])) {
-    $filters['type'] = $_GET['type'];
-}
-
-if (!empty($_GET['category_id'])) {
-    $filters['category_id'] = intval($_GET['category_id']);
-}
-
-// 获取交易记录
-$transaction = new Transaction();
-$results = $transaction->getByUserId($user_id, $filters);
-
-if (isset($results['error'])) {
+// 验证日期参数
+if (empty($_GET['start_date']) || empty($_GET['end_date'])) {
     http_response_code(400);
-    echo json_encode($results);
-} else {
-    echo json_encode($results);
-} 
+    echo json_encode(['error' => '开始日期和结束日期不能为空']);
+    exit;
+}
+
+$start_date = $_GET['start_date'];
+$end_date = $_GET['end_date'];
+
+// 获取趋势统计数据
+$transaction = new Transaction();
+$results = $transaction->getTrendStats($user_id, $start_date, $end_date);
+
+echo json_encode($results); 

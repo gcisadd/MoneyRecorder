@@ -201,4 +201,230 @@ class Transaction {
             return ['error' => '获取统计数据失败: ' . $e->getMessage()];
         }
     }
+
+    /**
+     * 获取类别统计数据
+     * 
+     * @input int $user_id 用户ID
+     * @input string $start_date 开始日期
+     * @input string $end_date 结束日期
+     * @process 统计用户各类别的收支情况
+     * @output 类别统计数据
+     */
+    public function getCategoryStats($user_id, $start_date, $end_date) {
+        try {
+            // 收入类别统计
+            $incomeStmt = $this->db->prepare("
+                SELECT 
+                    c.id, 
+                    c.name as category_name, 
+                    c.icon,
+                    SUM(t.amount) as total
+                FROM transactions t
+                JOIN categories c ON t.category_id = c.id
+                WHERE t.user_id = ? 
+                    AND t.type = 'income'
+                    AND t.transaction_date BETWEEN ? AND ?
+                GROUP BY c.id, c.name, c.icon
+                ORDER BY total DESC
+            ");
+            
+            $incomeStmt->execute([$user_id, $start_date, $end_date]);
+            $incomeStats = $incomeStmt->fetchAll();
+            
+            // 支出类别统计
+            $expenseStmt = $this->db->prepare("
+                SELECT 
+                    c.id, 
+                    c.name as category_name, 
+                    c.icon,
+                    SUM(t.amount) as total
+                FROM transactions t
+                JOIN categories c ON t.category_id = c.id
+                WHERE t.user_id = ? 
+                    AND t.type = 'expense'
+                    AND t.transaction_date BETWEEN ? AND ?
+                GROUP BY c.id, c.name, c.icon
+                ORDER BY total DESC
+            ");
+            
+            $expenseStmt->execute([$user_id, $start_date, $end_date]);
+            $expenseStats = $expenseStmt->fetchAll();
+            
+            return [
+                'income' => $incomeStats,
+                'expense' => $expenseStats
+            ];
+        } catch (PDOException $e) {
+            return ['error' => '获取类别统计数据失败: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * 获取收支趋势统计数据
+     * 
+     * @input int $user_id 用户ID
+     * @input string $start_date 开始日期
+     * @input string $end_date 结束日期
+     * @process 按时间间隔统计收支趋势
+     * @output 趋势统计数据
+     */
+    public function getTrendStats($user_id, $start_date, $end_date) {
+        try {
+            // 计算日期跨度
+            $start = new DateTime($start_date);
+            $end = new DateTime($end_date);
+            $interval = $start->diff($end);
+            $days = $interval->days + 1; // 包括结束日期
+            
+            // 根据跨度决定分组方式
+            $groupBy = '';
+            $dateFormat = '';
+            $intervalLabel = '';
+            
+            if ($days <= 31) {
+                // 少于31天，按天统计
+                $groupBy = "DATE(transaction_date)";
+                $dateFormat = "Y-m-d";
+                $intervalLabel = "日";
+            } else if ($days <= 92) {
+                // 少于3个月，按周统计
+                $groupBy = "YEARWEEK(transaction_date, 1)";
+                $dateFormat = "Y-W"; // ISO周格式
+                $intervalLabel = "周";
+            } else {
+                // 大于3个月，按月统计
+                $groupBy = "DATE_FORMAT(transaction_date, '%Y-%m')";
+                $dateFormat = "Y-m";
+                $intervalLabel = "月";
+            }
+            
+            // 构建日期序列
+            $dateLabels = [];
+            $incomeData = [];
+            $expenseData = [];
+            
+            if ($intervalLabel === "日") {
+                // 按天构建日期序列
+                $period = new DatePeriod(
+                    $start,
+                    new DateInterval('P1D'),
+                    $end->modify('+1 day')
+                );
+                
+                foreach ($period as $date) {
+                    $dateLabels[] = $date->format('Y-m-d');
+                    $incomeData[$date->format('Y-m-d')] = 0;
+                    $expenseData[$date->format('Y-m-d')] = 0;
+                }
+            } else if ($intervalLabel === "周") {
+                // 按周构建序列，确保起始日是周一
+                $weekStart = clone $start;
+                $weekStart->modify('last monday');
+                if ($weekStart < $start) {
+                    $weekStart->modify('+7 days');
+                }
+                
+                $period = new DatePeriod(
+                    $weekStart,
+                    new DateInterval('P7D'),
+                    $end->modify('+7 days')
+                );
+                
+                foreach ($period as $date) {
+                    $weekLabel = $date->format('Y-W');
+                    $dateLabels[] = $weekLabel;
+                    $incomeData[$weekLabel] = 0;
+                    $expenseData[$weekLabel] = 0;
+                }
+            } else {
+                // 按月构建序列
+                $monthStart = clone $start;
+                $monthStart->modify('first day of this month');
+                
+                $period = new DatePeriod(
+                    $monthStart,
+                    new DateInterval('P1M'),
+                    $end->modify('last day of next month')
+                );
+                
+                foreach ($period as $date) {
+                    $monthLabel = $date->format('Y-m');
+                    $dateLabels[] = $monthLabel;
+                    $incomeData[$monthLabel] = 0;
+                    $expenseData[$monthLabel] = 0;
+                }
+            }
+            
+            // 查询收入数据
+            $incomeStmt = $this->db->prepare("
+                SELECT 
+                    $groupBy as date_group,
+                    SUM(amount) as total
+                FROM transactions
+                WHERE user_id = ? 
+                    AND type = 'income' 
+                    AND transaction_date BETWEEN ? AND ?
+                GROUP BY date_group
+                ORDER BY date_group
+            ");
+            
+            $incomeStmt->execute([$user_id, $start_date, $end_date]);
+            $incomeResults = $incomeStmt->fetchAll();
+            
+            foreach ($incomeResults as $row) {
+                if (isset($incomeData[$row['date_group']])) {
+                    $incomeData[$row['date_group']] = floatval($row['total']);
+                }
+            }
+            
+            // 查询支出数据
+            $expenseStmt = $this->db->prepare("
+                SELECT 
+                    $groupBy as date_group,
+                    SUM(amount) as total
+                FROM transactions
+                WHERE user_id = ? 
+                    AND type = 'expense' 
+                    AND transaction_date BETWEEN ? AND ?
+                GROUP BY date_group
+                ORDER BY date_group
+            ");
+            
+            $expenseStmt->execute([$user_id, $start_date, $end_date]);
+            $expenseResults = $expenseStmt->fetchAll();
+            
+            foreach ($expenseResults as $row) {
+                if (isset($expenseData[$row['date_group']])) {
+                    $expenseData[$row['date_group']] = floatval($row['total']);
+                }
+            }
+            
+            // 格式化标签显示
+            $displayLabels = [];
+            foreach ($dateLabels as $label) {
+                if ($intervalLabel === "日") {
+                    // 转换为 "MM-DD" 格式
+                    $date = new DateTime($label);
+                    $displayLabels[] = $date->format('m-d');
+                } else if ($intervalLabel === "周") {
+                    // 显示为 "第X周" 格式
+                    $parts = explode('-', $label);
+                    $displayLabels[] = "第{$parts[1]}周";
+                } else {
+                    // 显示为 "YYYY-MM" 格式
+                    $displayLabels[] = $label;
+                }
+            }
+            
+            return [
+                'dates' => $displayLabels,
+                'income' => array_values($incomeData),
+                'expense' => array_values($expenseData),
+                'interval' => $intervalLabel
+            ];
+        } catch (PDOException $e) {
+            return ['error' => '获取趋势统计数据失败: ' . $e->getMessage()];
+        }
+    }
 } 

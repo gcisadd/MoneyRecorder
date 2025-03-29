@@ -6,6 +6,7 @@
     <title>个人记账本</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -114,6 +115,46 @@
             <div class="action-buttons">
                 <button id="add-income-btn" class="btn btn-success"><i class="fas fa-plus"></i> 添加收入</button>
                 <button id="add-expense-btn" class="btn btn-danger"><i class="fas fa-minus"></i> 添加支出</button>
+                <button id="export-btn" class="btn btn-primary"><i class="fas fa-download"></i> 导出记录</button>
+            </div>
+            
+            
+            <!-- 在交易记录列表前添加统计图表区域 -->
+            <div class="charts-container">
+                <h2>收支分析</h2>
+                <div class="chart-tabs">
+                    <button class="chart-tab active" data-chart="type">收支类型</button>
+                    <button class="chart-tab" data-chart="category">类别分布</button>
+                    <button class="chart-tab" data-chart="trend">收支趋势</button>
+                </div>
+                <div class="charts-content">
+                    <div class="chart-panel active" id="type-chart-panel">
+                        <div class="chart-wrapper">
+                            <canvas id="type-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-panel" id="category-chart-panel">
+                        <div class="chart-row">
+                            <div class="chart-column">
+                                <h3>收入类别</h3>
+                                <div class="chart-wrapper">
+                                    <canvas id="income-category-chart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-column">
+                                <h3>支出类别</h3>
+                                <div class="chart-wrapper">
+                                    <canvas id="expense-category-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-panel" id="trend-chart-panel">
+                        <div class="chart-wrapper">
+                            <canvas id="trend-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- 交易记录过滤器 -->
@@ -141,19 +182,33 @@
             <div class="transaction-list-container">
                 <h2>交易记录</h2>
                 <div id="transaction-list" class="transaction-list">
-                    <!-- 交易记录将通过JS动态填充 -->
+                    <div class="transaction-item income">
+                        <div class="transaction-info">
+                            <div class="category-icon">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="transaction-item expense">
+                        <div class="transaction-info">
+                            <div class="category-icon">
+                                <i class="fas fa-car"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 其他交易记录 -->
                 </div>
                 <div id="empty-list-message" class="empty-message hide">
-                    <p>暂无交易记录，请点击上方按钮添加。</p>
+                    <p>暂无交易记录</p>
                 </div>
             </div>
         </div>
         
-        <!-- 添加交易记录弹窗 -->
+        <!-- 交易记录表单 -->
         <div id="transaction-modal" class="modal hide">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 id="modal-title">添加交易记录</h2>
+                    <h2 id="modal-title"></h2>
                     <span class="close-modal">&times;</span>
                 </div>
                 <div class="modal-body">
@@ -188,5 +243,21 @@
     </div>
     
     <script src="js/app.js"></script>
+    <script src="js/charts.js"></script>
+    
+    <!-- 自定义提示弹窗 -->
+    <div id="custom-alert" class="modal hide">
+        <div class="modal-content alert-content">
+            <div class="alert-header">
+                <h2 id="alert-title">提示</h2>
+            </div>
+            <div class="alert-body">
+                <p id="alert-message">操作成功</p>
+            </div>
+            <div class="alert-footer">
+                <button id="alert-confirm" class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html> 
