@@ -98,27 +98,61 @@ document.addEventListener('DOMContentLoaded', function() {
         showTransactionModal('expense');
     });
     
-    // 关闭弹窗
+    // 点击×关闭弹窗
     document.querySelectorAll('.close-modal').forEach(button => {
         button.addEventListener('click', function() {
             closeModal();
         });
     });
     
+    // 点击取消关闭弹窗
+    document.querySelectorAll('.btn-cancel').forEach(button => {
+        button.addEventListener('click', function() {
+            closeModal();
+        });
+    });
+
     // 交易记录表单提交
     document.getElementById('transaction-form').addEventListener('submit', function(e) {
         e.preventDefault();
         saveTransaction();
     });
     
-    // 筛选按钮
+    // 打开筛选弹窗按钮
     document.getElementById('filter-btn').addEventListener('click', function() {
-        filterTransactions();
+        showFilterModal();
+    });
+    
+    // 关闭筛选弹窗
+    document.getElementById('close-filter-modal').addEventListener('click', function() {
+        document.getElementById('filter-modal').classList.add('hide');
+    });
+    
+    // 筛选类型按钮点击
+    document.querySelectorAll('.filter-type-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // 移除所有按钮的active类
+            document.querySelectorAll('.filter-type-btn').forEach(b => {
+                b.classList.remove('active');
+            });
+            
+            // 设置当前按钮为active
+            this.classList.add('active');
+            
+            // 更新类别列表
+            const selectedType = this.getAttribute('data-type');
+            updateFilterCategoriesView(selectedType);
+        });
+    });
+    
+    // 应用筛选按钮
+    document.getElementById('apply-filter-modal-btn').addEventListener('click', function() {
+        applyFilters();
     });
     
     // 重置筛选按钮
-    document.getElementById('reset-filter-btn').addEventListener('click', function() {
-        resetFilters();
+    document.getElementById('reset-filter-modal-btn').addEventListener('click', function() {
+        resetFilterModal();
     });
     
     // 设置今天的日期为默认日期
@@ -138,6 +172,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // 大约在第87行附近，其他事件监听之后
     document.getElementById('alert-confirm').addEventListener('click', function() {
         document.getElementById('custom-alert').classList.add('hide');
+    });
+
+    // 类型选择框事件监听
+    document.getElementById('filter-type').addEventListener('change', function() {
+        const selectedType = this.value;
+        updateCategoriesByType(selectedType);
+    });
+
+    document.getElementById('reset-filter-btn').addEventListener('click', function() {
+        resetFilters();
     });
 });
 
@@ -320,6 +364,52 @@ function showError(elementId, message) {
 }
 
 /**
+ * 根据所选类型更新类别选择框
+ * 
+ * @input string type 交易类型(income/expense/all)
+ * @process 根据类型过滤类别选项
+ * @output 更新类别选择框
+ */
+function updateCategoriesByType(type) {
+    const categorySelect = document.getElementById('filter-category');
+    // 清空现有选项
+    categorySelect.innerHTML = '<option value="all">全部</option>';
+    
+    // 显示调试信息
+    console.log('当前选择的类型:', type);
+    console.log('所有类别:', categories);
+    
+    // 如果选择了"全部"，显示所有类别
+    if (type === 'all') {
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.id;
+            option.textContent = category.name;
+            option.dataset.type = category.type; // 添加数据属性方便调试
+            categorySelect.appendChild(option);
+        });
+        return;
+    }
+    
+    // 过滤类别
+    // 确保使用正确的类型值进行比较
+    const filteredCategories = categories.filter(category => {
+        return category.type === type;
+    });
+    
+    console.log('过滤后的类别:', filteredCategories);
+    
+    // 添加过滤后的类别选项
+    filteredCategories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category.id;
+        option.textContent = category.name;
+        option.dataset.type = category.type; // 添加数据属性方便调试
+        categorySelect.appendChild(option);
+    });
+}
+
+/**
  * 加载类别列表
  * 
  * @input 无
@@ -335,20 +425,32 @@ function loadCategories() {
             return;
         }
         
-        categories = data;
+        console.log('API返回的原始类别数据:', data);
         
-        // 填充筛选类别下拉菜单
-        const filterCategorySelect = document.getElementById('filter-category');
-        // 清空现有选项
-        filterCategorySelect.innerHTML = '<option value="all">全部</option>';
-        
-        // 添加类别选项
-        categories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category.id;
-            option.textContent = category.name;
-            filterCategorySelect.appendChild(option);
+        // 确保类别数据格式正确
+        categories = data.map(category => {
+            // 如果类别数据缺少type字段，尝试根据name判断
+            if (!category.type) {
+                // 这里根据类别名称判断类型，你可能需要根据实际情况调整
+                if (category.name.includes('收入') || 
+                    category.name === '工资' || 
+                    category.name === '奖金' || 
+                    category.name === '投资收益' || 
+                    category.name === '其他收入') {
+                    category.type = 'income';
+                } else {
+                    category.type = 'expense';
+                }
+                console.log(`为类别 ${category.name} 设置类型: ${category.type}`);
+            }
+            return category;
         });
+        
+        // 初始时根据当前选择的类型过滤类别
+        const currentType = document.getElementById('filter-type').value;
+        updateCategoriesByType(currentType);
+        
+        console.log('处理后的类别数据:', categories);
     })
     .catch(error => {
         console.error('加载类别请求失败:', error);
@@ -836,44 +938,261 @@ function deleteTransaction(id) {
 }
 
 /**
- * 筛选交易记录
+ * 显示筛选弹窗
  * 
  * @input 无
- * @process 获取筛选条件并筛选数据
- * @output 显示筛选后的交易记录
+ * @process 显示筛选弹窗并初始化选项
+ * @output 无
  */
-function filterTransactions() {
-    const type = document.getElementById('filter-type').value;
-    const categoryId = document.getElementById('filter-category').value;
+function showFilterModal() {
+    const modal = document.getElementById('filter-modal');
     
-    // 构建筛选条件
-    let filtered = [...transactions];
+    // 初始化类型选择（默认全部）
+    document.querySelectorAll('.filter-type-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector('.filter-type-btn[data-type="all"]').classList.add('active');
     
+    // 初始化类别选择
+    updateFilterCategoriesView('all');
+    
+    // 显示弹窗
+    modal.classList.remove('hide');
+}
+
+/**
+ * 更新筛选弹窗中的类别显示
+ * 
+ * @input string type 交易类型(income/expense/all)
+ * @process 根据类型更新可选类别
+ * @output 无
+ */
+function updateFilterCategoriesView(type) {
+    const categoriesContainer = document.getElementById('filter-categories-container');
+    categoriesContainer.innerHTML = '';
+    
+    // 添加"全部"选项
+    const allCategoryLabel = document.createElement('label');
+    allCategoryLabel.className = 'category-checkbox all selected';
+    allCategoryLabel.innerHTML = `
+        <input type="checkbox" value="all" checked>
+        <span>全部</span>
+    `;
+    
+    // 确保事件正确绑定
+    allCategoryLabel.addEventListener('click', function(e) {
+        toggleCategorySelection(e);
+    });
+    
+    categoriesContainer.appendChild(allCategoryLabel);
+    
+    // 过滤并添加类别选项
+    let filteredCategories = categories;
     if (type !== 'all') {
-        filtered = filtered.filter(t => t.type === type);
+        filteredCategories = categories.filter(category => category.type === type);
     }
     
-    if (categoryId !== 'all') {
-        filtered = filtered.filter(t => t.category_id.toString() === categoryId);
+    filteredCategories.forEach(category => {
+        const label = document.createElement('label');
+        label.className = `category-checkbox ${category.type}`;
+        label.innerHTML = `
+            <input type="checkbox" value="${category.id}">
+            <span>${category.name}</span>
+        `;
+        
+        // 确保事件正确绑定
+        label.addEventListener('click', function(e) {
+            toggleCategorySelection(e);
+        });
+        
+        categoriesContainer.appendChild(label);
+    });
+}
+
+/**
+ * 切换类别选择状态
+ * 
+ * @input Event event 点击事件
+ * @process 切换类别的选中状态
+ * @output 无
+ */
+function toggleCategorySelection(event) {
+    event.preventDefault(); // 防止默认行为
+    
+    const checkbox = event.currentTarget;
+    const input = checkbox.querySelector('input');
+    const isAll = input.value === 'all';
+    
+    // 如果点击的是"全部"选项
+    if (isAll) {
+        // 取消所有其他选项
+        document.querySelectorAll('.category-checkbox').forEach(cb => {
+            cb.classList.remove('selected');
+            cb.querySelector('input').checked = false;
+        });
+        
+        // 选中"全部"选项
+        checkbox.classList.add('selected');
+        input.checked = true;
+    } else {
+        // 取消"全部"选项
+        const allCheckbox = document.querySelector('.category-checkbox.all');
+        allCheckbox.classList.remove('selected');
+        allCheckbox.querySelector('input').checked = false;
+        
+        // 切换当前选项的选中状态
+        const isSelected = checkbox.classList.contains('selected');
+        if (isSelected) {
+            checkbox.classList.remove('selected');
+            input.checked = false;
+        } else {
+            checkbox.classList.add('selected');
+            input.checked = true;
+        }
+        
+        // 如果没有选中项，则自动选中"全部"
+        const hasSelected = document.querySelector('.category-checkbox.selected');
+        if (!hasSelected) {
+            allCheckbox.classList.add('selected');
+            allCheckbox.querySelector('input').checked = true;
+        }
+    }
+}
+
+/**
+ * 应用筛选条件
+ * 
+ * @input 无
+ * @process 获取选中的筛选条件并筛选数据
+ * @output 显示筛选后的交易记录
+ */
+function applyFilters() {
+    // 获取选中的类型
+    const selectedType = document.querySelector('.filter-type-btn.active').getAttribute('data-type');
+    
+    // 获取选中的类别
+    const selectedCategories = [];
+    document.querySelectorAll('.category-checkbox.selected input').forEach(input => {
+        selectedCategories.push(input.value);
+    });
+    
+    // 筛选记录
+    let filtered = [...transactions];
+    
+    // 按类型筛选
+    if (selectedType !== 'all') {
+        filtered = filtered.filter(t => t.type === selectedType);
+    }
+    
+    // 按类别筛选
+    if (!selectedCategories.includes('all')) {
+        filtered = filtered.filter(t => selectedCategories.includes(t.category_id.toString()));
     }
     
     // 显示筛选结果
     displayTransactions(filtered);
+    
+    // 关闭弹窗
+    document.getElementById('filter-modal').classList.add('hide');
+    
+    // 显示筛选提示
+    showFilterIndicator(selectedType, selectedCategories);
 }
 
 /**
- * 重置筛选条件
+ * 显示筛选指示器
+ * 
+ * @input string type 选中的类型
+ * @input array categories 选中的类别ID数组
+ * @process 更新界面上的筛选指示
+ * @output 无
+ */
+function showFilterIndicator(type, categoryIds) {
+    const filterBtn = document.getElementById('filter-btn');
+    
+    // 如果是全部类型且全部类别，则不显示指示器
+    if (type === 'all' && categoryIds.includes('all')) {
+        filterBtn.textContent = '筛选';
+        filterBtn.classList.remove('active');
+    } else {
+        filterBtn.textContent = '已筛选';
+        filterBtn.classList.add('active');
+    }
+}
+
+/**
+ * 重置筛选弹窗
  * 
  * @input 无
- * @process 重置筛选表单并显示所有记录
+ * @process 重置筛选选项到默认状态并重置筛选结果
+ * @output 无
+ */
+function resetFilterModal() {
+    try {
+        // 重置类型选择
+        document.querySelectorAll('.filter-type-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector('.filter-type-btn[data-type="all"]').classList.add('active');
+        
+        // 重置类别选择
+        updateFilterCategoriesView('all');
+        
+        // 关闭弹窗
+        document.getElementById('filter-modal').classList.add('hide');
+        
+        // 重置筛选指示器
+        const filterBtn = document.getElementById('filter-btn');
+        filterBtn.textContent = '筛选';
+        filterBtn.classList.remove('active');
+        
+        // 重新加载数据
+        const dateRange = document.getElementById('date-range').value;
+        if (dateRange === 'custom') {
+            loadTransactionsByCustomDateRange();
+        } else {
+            loadTransactionsByDateRange(dateRange);
+        }
+        
+        // 显示重置成功提示
+        showToast('筛选条件已重置', 'success');
+    } catch (error) {
+        console.error('重置筛选时发生错误:', error);
+        showToast('重置失败: ' + error.message, 'error');
+    }
+}
+function applyFilterModal() {
+    showToast('筛选条件已应用', 'success');
+}
+/**
+ * 重置所有筛选条件
+ * 
+ * @input 无
+ * @process 重置筛选条件并显示所有记录
  * @output 无
  */
 function resetFilters() {
-    document.getElementById('filter-type').value = 'all';
-    document.getElementById('filter-category').value = 'all';
-    
-    // 显示所有记录
-    displayTransactions(transactions);
+    try {
+        console.log('重置所有筛选条件被调用');
+        
+        // 重置筛选指示器
+        const filterBtn = document.getElementById('filter-btn');
+        filterBtn.textContent = '筛选';
+        filterBtn.classList.remove('active');
+        
+        // 重新加载数据（显示所有记录）
+        const dateRange = document.getElementById('date-range').value;
+        if (dateRange === 'custom') {
+            loadTransactionsByCustomDateRange();
+        } else {
+            loadTransactionsByDateRange(dateRange);
+        }
+        
+        showToast('筛选条件已重置', 'success');
+    } catch (error) {
+        console.error('重置筛选条件时发生错误:', error);
+        showToast('重置失败: ' + error.message, 'error');
+    }
 }
 
 /**
@@ -950,13 +1269,6 @@ function exportTransactions() {
 }
 
 /**
- * 获取指定日期范围
- * 
- * @input string type 日期范围类型
- * @process 根据类型获取日期范围
- * @output object 包含开始日期和结束日期的对象
- */
-/**
  * 显示自定义提示弹窗
  * 
  * @input string message 提示信息
@@ -981,4 +1293,48 @@ function showAlert(message, title = '提示') {
     };
     
     confirmBtn.addEventListener('click', handleConfirm);
+}
+
+/**
+ * 获取日期范围
+ * 
+ * @input string type 日期范围类型(month/quarter/year)
+ * @process 根据类型计算日期范围
+ * @output object 包含开始日期和结束日期的对象
+ */
+function getDateRangeFromType(type) {
+    const today = new Date();
+    let startDate, endDate;
+    
+    switch(type) {
+        case 'month':
+            // 本月第一天
+            startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+            // 下月第一天的前一天（本月最后一天）
+            endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            break;
+        case 'quarter':
+            // 当前季度第一个月
+            const quarterStartMonth = Math.floor(today.getMonth() / 3) * 3;
+            // 本季度第一天
+            startDate = new Date(today.getFullYear(), quarterStartMonth, 1);
+            // 下季度第一天的前一天（本季度最后一天）
+            endDate = new Date(today.getFullYear(), quarterStartMonth + 3, 0);
+            break;
+        case 'year':
+            // 本年第一天
+            startDate = new Date(today.getFullYear(), 0, 1);
+            // 本年最后一天
+            endDate = new Date(today.getFullYear(), 11, 31);
+            break;
+        default:
+            // 默认本月
+            startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+            endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    }
+    
+    return {
+        startDate: formatDate(startDate),
+        endDate: formatDate(endDate)
+    };
 } 

@@ -159,23 +159,8 @@
             
             <!-- 交易记录过滤器 -->
             <div class="transaction-filter">
-                <div class="filter-group">
-                    <label for="filter-type">类型:</label>
-                    <select id="filter-type">
-                        <option value="all">全部</option>
-                        <option value="income">收入</option>
-                        <option value="expense">支出</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="filter-category">类别:</label>
-                    <select id="filter-category">
-                        <option value="all">全部</option>
-                        <!-- 类别选项将通过JS动态填充 -->
-                    </select>
-                </div>
-                <button id="filter-btn" class="btn btn-small">筛选</button>
-                <button id="reset-filter-btn" class="btn btn-small">重置</button>
+                <button id="filter-btn" class="btn btn-primary">筛选</button>
+                <button id="reset-filter-btn" class="btn btn-cancel" onclick="resetFilterModal()">重置</button>
             </div>
             
             <!-- 交易记录列表 -->
@@ -197,10 +182,6 @@
                         </div>
                     </div>
                     <!-- 其他交易记录 -->
-                     <!-- 输出调试信息 -->
-                     <script>
-                        console.log('transaction-list:', document.getElementById('transaction-list'));
-                     </script>
                 </div>
                 <div id="empty-list-message" class="empty-message hide">
                     <p>暂无交易记录</p>
@@ -237,7 +218,7 @@
                             <textarea id="transaction-description" class="fixed-height-textarea" rows="3" placeholder="添加备注..."></textarea>
                         </div>
                         <div class="form-buttons">
-                            <button type="button" class="btn btn-cancel close-modal">取消</button>
+                            <button type="button" class="btn btn-cancel">取消</button>
                             <button type="submit" class="btn btn-primary">保存</button>
                         </div>
                     </form>
@@ -272,6 +253,51 @@
                 <i class="fas fa-check-circle"></i>
             </div>
             <div class="toast-message"></div>
+        </div>
+    </div>
+    
+    <!-- 交易过滤弹窗 -->
+    <div id="filter-modal" class="modal hide">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>筛选交易记录</h2>
+                <span class="close-modal" id="close-filter-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="filter-section">
+                    <h3>选择交易类型</h3>
+                    <div class="filter-type-buttons">
+                        <button class="filter-type-btn active" data-type="all">全部</button>
+                        <button class="filter-type-btn" data-type="income">收入</button>
+                        <button class="filter-type-btn" data-type="expense">支出</button>
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <h3>选择交易类别</h3>
+                    <div class="filter-categories" id="filter-categories-container">
+                        <!-- 类别选项将通过JS动态填充 -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="reset-filter-modal-btn" class="btn btn-cancel" onclick="resetFilterModal()">重置</button>
+                <button id="apply-filter-modal-btn" class="btn btn-primary" onclick="applyFilterModal()">筛选</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加自定义提示弹窗 -->
+    <div id="custom-alert" class="modal hide">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="alert-title">提示</h2>
+            </div>
+            <div class="modal-body">
+                <p id="alert-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="alert-confirm" class="btn btn-primary">确定</button>
+            </div>
         </div>
     </div>
 </body>

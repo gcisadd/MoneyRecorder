@@ -458,6 +458,7 @@ body {
     color: #7f8c8d;
     cursor: pointer;
     transition: color 0.3s;
+    display: none;
 }
 
 .close-modal:hover {
@@ -767,4 +768,119 @@ body {
 
 .toast-alert.error .toast-icon i {
     content: "\f057"; /* Font Awesome 错误图标 */
+}
+
+/* 选择框样式 */
+.filter-select {
+    min-width: 120px; /* 设置最小宽度 */
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+}
+
+/* 筛选弹窗样式 */
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.filter-section h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+.filter-type-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filter-type-btn {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.filter-type-btn:hover {
+    background-color: #e9ecef;
+}
+
+.filter-type-btn.active {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.filter-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.category-checkbox {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s;
+    user-select: none; /* 防止文本被选中 */
+}
+
+.category-checkbox:hover {
+    background-color: #e9ecef;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.category-checkbox.selected {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
+}
+
+.category-checkbox input {
+    display: none;
+}
+
+.category-checkbox span {
+    pointer-events: none; /* 确保点击文本也能触发父元素的点击事件 */
+}
+
+.category-checkbox.income {
+    border-left: 3px solid #2ecc71;
+}
+
+.category-checkbox.expense {
+    border-left: 3px solid #e74c3c;
+}
+
+.category-checkbox.selected.income {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+}
+
+.category-checkbox.selected.expense {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #ddd;
 } 
