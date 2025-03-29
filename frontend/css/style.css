@@ -12,10 +12,20 @@ body {
     line-height: 1.6;
 }
 
+/* 修改html和body样式确保全屏高度 */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* 修改app-container以确保它占满整个视口高度 */
 .app-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    min-height: 100vh;
+    position: relative;
 }
 
 .hide {
@@ -111,11 +121,17 @@ body {
 /* 登录/注册表单 */
 .auth-container {
     max-width: 500px;
-    margin: 50px auto;
+    width: 90%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    margin: 0;
+    z-index: 100; /* 确保登录框在最上层 */
 }
 
 .auth-tabs .tab-header {
@@ -160,6 +176,7 @@ body {
 
 /* 主应用界面 */
 .app-content {
+    width: 100%;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -907,4 +924,33 @@ body {
     gap: 10px;
     background-color: #f8f9fa;
     border-top: 1px solid #ddd;
+}
+
+/* 密码输入框样式 */
+.password-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-field input {
+    width: 100%;
+    padding-right: 40px; /* 为眼睛图标预留空间 */
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: color 0.3s;
+    z-index: 10;
+}
+
+.password-toggle:hover {
+    color: #3498db;
+}
+
+.password-toggle i {
+    font-size: 14px;
 } 

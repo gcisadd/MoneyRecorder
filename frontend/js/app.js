@@ -184,6 +184,41 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('reset-filter-btn').addEventListener('click', function() {
         resetFilters();
     });
+
+    // 初始化密码显示/隐藏功能
+    initPasswordToggles();
+
+    console.log('开始初始化密码切换功能');
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    console.log('找到密码切换按钮数量：', passwordToggles.length);
+    
+    passwordToggles.forEach((toggle, index) => {
+        console.log(`正在为按钮 ${index + 1} 添加点击事件`);
+        toggle.addEventListener('click', function(e) {
+            console.log('密码切换按钮被点击了');
+            const targetId = this.getAttribute('data-target');
+            console.log('目标输入框ID:', targetId);
+            const passwordInput = document.getElementById(targetId);
+            
+            if (passwordInput) {
+                console.log('当前密码框类型:', passwordInput.type);
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    this.innerHTML = '<i class="fas fa-eye"></i>';
+                    console.log('密码已显示');
+                } else {
+                    passwordInput.type = 'password';
+                    this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                    console.log('密码已隐藏');
+                }
+            } else {
+                console.error('未找到目标密码输入框:', targetId);
+            }
+        });
+        
+        // 添加明确的点击样式，以便更容易看出是否可点击
+        toggle.style.cursor = 'pointer';
+    });
 });
 
 /**
@@ -1356,4 +1391,55 @@ function getDateRangeFromType(type) {
         startDate: formatDate(startDate),
         endDate: formatDate(endDate)
     };
+}
+
+/**
+ * 初始化密码显示/隐藏功能
+ * 
+ * @input 无
+ * @process 为密码切换按钮添加点击事件
+ * @output 点击时切换密码显示状态
+ */
+function initPasswordToggles() {
+    // 获取所有密码切换按钮
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    
+    passwordToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            // 获取目标密码输入框
+            const targetId = this.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            
+            // 切换密码显示/隐藏状态
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.innerHTML = '<i class="fas fa-eye"></i>';
+            } else {
+                passwordInput.type = 'password';
+                this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            }
+        });
+    });
+    
+    console.log('密码显示/隐藏功能已初始化，共找到 ' + passwordToggles.length + ' 个按钮');
+}
+
+/**
+ * 切换密码显示/隐藏状态
+ * 
+ * @input string inputId 密码输入框的ID
+ * @input Element toggleBtn 切换按钮元素
+ * @process 切换密码显示状态和图标
+ * @output 无
+ */
+function togglePassword(inputId, toggleBtn) {
+    const passwordInput = document.getElementById(inputId);
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+    } else {
+        passwordInput.type = 'password';
+        toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+    }
 } 
