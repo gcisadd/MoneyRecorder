@@ -208,10 +208,6 @@ html, body {
     font-size: 24px;
 }
 
-.logo {
-    width: 40px; /* 根据需要调整logo大小 */
-    height: 40px; /* 根据需要调整logo大小 */
-}
 
 .user-info {
     display: flex;
@@ -1145,4 +1141,23 @@ html, body {
 .btn-cancel {
     background-color: #95a5a6;
     color: white;
+}
+
+.logo {
+    width: 30px;
+    height: 30px;
+    position: relative;
+}
+
+.logo-container {
+    display: flex; /* 使用flex布局 */
+    align-items: center; /* 垂直居中对齐 */
+    justify-content: center; /* 水平居中对齐 */
+    margin-bottom: 20px; /* 与表单之间的间距 */
+}
+
+.logo-container h1 {
+    font-size: 24px; /* 名称字体大小 */
+    color: #3498db; /* 名称颜色 */
+    margin: 0; /* 去掉默认的margin */
 } 

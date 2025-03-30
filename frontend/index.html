@@ -10,16 +10,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<header class="web-header">
-    <img src="../../images/coin.png" alt="Logo" class="logo">
-    <h1>个人记账本</h1>
-</header>
-
 <body>
     <div class="app-container">
         <!-- 登录/注册表单 -->
         <div id="auth-container" class="auth-container">
+            <div class="logo-container">
+                <img src="../../images/coin.png" alt="Logo" class="logo">
+                <h1>个人记账本</h1>
+            </div>
             <div class="auth-tabs">
+                
                 <div class="tab-header">
                     <div class="tab active" data-tab="login">登录</div>
                     <div class="tab" data-tab="register">注册</div>
@@ -83,6 +83,7 @@
         <!-- 主应用界面 -->
         <div id="app-content" class="app-content hide">
             <header class="app-header">
+                <img src="../../images/coin.png" alt="Logo" class="logo">
                 <h1>个人记账本</h1>
                 <div class="user-info">
                     <span id="username-display"></span>
