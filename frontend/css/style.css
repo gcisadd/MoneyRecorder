@@ -88,9 +88,8 @@ html, body {
 }
 
 .btn-small {
-    padding: 5px 10px;
-    font-size: 14px;
-    line-height: 1.5;
+    padding: 10px 15px;
+    font-size: 16px;
 }
 
 .btn-primary {
@@ -1129,9 +1128,8 @@ html, body {
 
 /* 确保按钮样式一致 */
 .btn-small {
-    padding: 5px 10px;
-    font-size: 14px;
-    line-height: 1.5;
+    padding: 10px 15px;
+    font-size: 16px;
 }
 
 .btn-primary {
@@ -1161,4 +1159,19 @@ html, body {
     font-size: 24px; /* 名称字体大小 */
     color: #3498db; /* 名称颜色 */
     margin: 0; /* 去掉默认的margin */
+}
+
+/* 退出按钮的样式 */
+#logout-btn {
+    background-color: #95a5a6;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+#logout-btn:hover {
+    background-color: #7f8c8d;
 } 
