@@ -445,7 +445,6 @@ function renderTrendChart(data) {
             },
             title: {
                 display: true,
-                text: '收支趋势',
                 font: {
                     size: 18
                 }
