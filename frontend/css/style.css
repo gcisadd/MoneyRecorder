@@ -354,11 +354,7 @@ html, body {
 }
 
 .transaction-list-container h2:after {
-    content: "";
-    flex-grow: 1;
-    height: 1px;
-    background-color: #eee;
-    margin-left: 15px;
+    display: none; /* 去掉伪元素 */
 }
 
 .transaction-list {
@@ -1080,9 +1076,10 @@ html, body {
 }
 
 .filter-buttons button {
-    padding: 6px 12px;
-    font-size: 14px;
+    padding: 10px 15px;
+    font-size: 16px;
     border-radius: 4px;
+    font-weight: 500;
 }
 
 /* 筛选按钮高亮状态 */
@@ -1119,11 +1116,7 @@ html, body {
 }
 
 .transaction-list-container h2:after {
-    content: "";
-    flex-grow: 1;
-    height: 1px;
-    background-color: #eee;
-    margin-left: 15px;
+    display: none; /* 去掉伪元素 */
 }
 
 /* 交易记录列表样式 */
