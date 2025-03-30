@@ -147,33 +147,41 @@ html, body {
 
 .auth-tabs .tab-header {
     display: flex;
-    background-color: #f8f9fa;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
 }
 
 .auth-tabs .tab {
-    flex: 1;
-    text-align: center;
-    padding: 15px;
+    padding: 8px 15px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
     cursor: pointer;
+    font-size: 20px;
     font-weight: 500;
-    transition: background-color 0.3s;
+    color: #7f8c8d;
+    transition: all 0.3s;
+    text-align: center;
 }
 
 .auth-tabs .tab:hover {
-    background-color: #e9ecef;
+    color: #3498db;
 }
 
 .auth-tabs .tab.active {
-    background-color: white;
-    border-bottom: 2px solid #3498db;
+    color: #3498db;
+    border-bottom-color: #3498db;
+    background-color: transparent;
 }
 
 .auth-tabs .tab-content {
+    position: relative;
     padding: 20px;
 }
 
 .auth-tabs .form {
     display: none;
+    animation: fadeIn 0.3s;
 }
 
 .auth-tabs .form.active {
