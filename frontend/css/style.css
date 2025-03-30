@@ -90,6 +90,7 @@ html, body {
 .btn-small {
     padding: 5px 10px;
     font-size: 14px;
+    line-height: 1.5;
 }
 
 .btn-primary {
@@ -335,28 +336,43 @@ html, body {
 /* 交易记录列表 */
 .transaction-list-container {
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 580px; /* 容器的最小高度 */
 }
 
 .transaction-list-container h2 {
     margin-bottom: 15px;
     color: #2c3e50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.transaction-list-container h2:after {
+    content: "";
+    flex-grow: 1;
+    height: 1px;
+    background-color: #eee;
+    margin-left: 15px;
 }
 
 .transaction-list {
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    min-height: 120px;
-    max-height: 480px;
-    overflow-y: auto;
+    min-height: 400px;
+    background-color: #fff;
 }
 
 .transaction-item {
     padding: 15px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #eee;
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: background-color 0.3s;
+    min-height: 66px; /* 每条记录的最小高度 */
+    box-sizing: border-box; /* 确保padding不会增加总高度 */
 }
 
 .transaction-item:last-child {
@@ -440,10 +456,20 @@ html, body {
 }
 
 .empty-message {
-    height: 120px;
+    height: 600px; /* 与transaction-list的min-height相同 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 30px;
     color: #7f8c8d;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.empty-message p {
+    margin: 0;
+    font-size: 16px;
+    color: #95a5a6;
 }
 
 /* 弹窗样式 */
@@ -968,4 +994,141 @@ html, body {
 
 .password-toggle i {
     font-size: 14px;
+}
+
+/* 添加翻页控件样式 */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 15px;
+    padding: 10px 0;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.pagination button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #333;
+    font-size: 16px;
+    padding: 0; /* 确保按钮内边距为0 */
+}
+
+.pagination button:hover:not([disabled]) {
+    background-color: #e9ecef;
+    border-color: #3498db;
+    color: #3498db;
+    transform: scale(1.05); /* 悬停时稍微放大按钮 */
+}
+
+.pagination button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f1f1f1;
+}
+
+.pagination button i {
+    font-size: 16px;
+    pointer-events: none; /* 防止图标干扰点击事件 */
+}
+
+.pagination span {
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 3px 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+/* 筛选按钮样式恢复 */
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.filter-buttons button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+/* 筛选按钮高亮状态 */
+#filter-btn.active {
+    background-color: #2980b9;
+    position: relative;
+}
+
+#filter-btn.active:after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 8px;
+    height: 8px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+}
+
+/* 重置交易记录容器样式 */
+.transaction-list-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 580px; /* 容器的最小高度 */
+}
+
+.transaction-list-container h2 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.transaction-list-container h2:after {
+    content: "";
+    flex-grow: 1;
+    height: 1px;
+    background-color: #eee;
+    margin-left: 15px;
+}
+
+/* 交易记录列表样式 */
+.transaction-list {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    min-height: 400px;
+    background-color: #fff;
+}
+
+/* 确保按钮样式一致 */
+.btn-small {
+    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-cancel {
+    background-color: #95a5a6;
+    color: white;
 } 

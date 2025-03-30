@@ -11,6 +11,8 @@ const API_URL = '../backend/api';
 let currentUser = null; // 当前登录用户
 let categories = []; // 类别列表
 let transactions = []; // 交易记录列表
+let currentPage = 1; // 当前页码
+const recordsPerPage = 5; // 每页显示6条记录
 
 // DOM元素
 document.addEventListener('DOMContentLoaded', function() {
@@ -218,6 +220,36 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 添加明确的点击样式，以便更容易看出是否可点击
         toggle.style.cursor = 'pointer';
+    });
+
+    // 清除可能存在的旧事件监听器
+    const prevButton = document.getElementById('prev-page');
+    const nextButton = document.getElementById('next-page');
+    
+    // 移除旧的事件监听器
+    prevButton.replaceWith(prevButton.cloneNode(true));
+    nextButton.replaceWith(nextButton.cloneNode(true));
+    
+    // 重新获取按钮引用
+    const newPrevButton = document.getElementById('prev-page');
+    const newNextButton = document.getElementById('next-page');
+    
+    // 添加新的事件监听器
+    newPrevButton.addEventListener('click', function() {
+        console.log('上一页按钮被点击');
+        if (currentPage > 1) {
+            currentPage--;
+            displayTransactions(transactions);
+        }
+    });
+    
+    newNextButton.addEventListener('click', function() {
+        console.log('下一页按钮被点击');
+        const totalPages = Math.ceil(transactions.length / recordsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayTransactions(transactions);
+        }
     });
 });
 
@@ -651,31 +683,95 @@ function loadStats(startDate, endDate) {
  * 
  * @input array transactions 交易记录数组
  * @process 创建交易记录DOM元素并插入到页面
- * @output 显示交易记录
+ * @output 显示交易记录并更新翻页控件
  */
-function displayTransactions(transactions) {
+function displayTransactions(transactionsData) {
+    console.log('显示交易记录，总数量：', transactionsData.length);
     const transactionList = document.getElementById('transaction-list');
     const emptyMessage = document.getElementById('empty-list-message');
+    const paginationElement = document.querySelector('.pagination');
     
     // 清空现有记录
     transactionList.innerHTML = '';
     
-    if (transactions.length === 0) {
+    if (transactionsData.length === 0) {
         // 显示空记录提示
         transactionList.classList.add('hide');
         emptyMessage.classList.remove('hide');
+        paginationElement.classList.add('hide'); // 隐藏翻页控件
         return;
     }
     
     // 隐藏空记录提示
     transactionList.classList.remove('hide');
     emptyMessage.classList.add('hide');
+    paginationElement.classList.remove('hide'); // 显示翻页控件
     
-    // 显示交易记录
-    transactions.forEach(transaction => {
+    // 计算当前页的数据
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const endIndex = Math.min(startIndex + recordsPerPage, transactionsData.length);
+    console.log('当前页索引范围：', startIndex, '至', endIndex);
+    
+    const currentPageData = transactionsData.slice(startIndex, endIndex);
+    
+    // 显示当前页的交易记录
+    currentPageData.forEach(transaction => {
         const transactionItem = createTransactionElement(transaction);
         transactionList.appendChild(transactionItem);
     });
+    
+    // 更新翻页信息
+    updatePaginationInfo(transactionsData.length, startIndex, endIndex);
+}
+
+/**
+ * 更新翻页控件信息
+ * 
+ * @input int total 总记录数
+ * @input int start 当前页起始索引
+ * @input int end 当前页结束索引
+ * @process 更新翻页控件的文本和状态
+ * @output 无
+ */
+function updatePaginationInfo(total, start, end) {
+    console.log('更新翻页信息：', {total, start, end});
+    
+    // 更新页码信息
+    document.getElementById('page-info').textContent = `第 ${start + 1}-${end} 条/共 ${total} 条`;
+    
+    // 更新按钮状态
+    const prevButton = document.getElementById('prev-page');
+    const nextButton = document.getElementById('next-page');
+    
+    if (prevButton && nextButton) {
+        // 设置上一页按钮状态
+        if (currentPage <= 1) {
+            prevButton.disabled = true;
+            prevButton.setAttribute('disabled', 'disabled');
+        } else {
+            prevButton.disabled = false;
+            prevButton.removeAttribute('disabled');
+        }
+        
+        // 设置下一页按钮状态
+        const totalPages = Math.ceil(total / recordsPerPage);
+        if (currentPage >= totalPages) {
+            nextButton.disabled = true;
+            nextButton.setAttribute('disabled', 'disabled');
+        } else {
+            nextButton.disabled = false;
+            nextButton.removeAttribute('disabled');
+        }
+        
+        console.log('按钮状态更新完成：', {
+            '当前页': currentPage,
+            '总页数': totalPages,
+            '上一页禁用': prevButton.disabled,
+            '下一页禁用': nextButton.disabled
+        });
+    } else {
+        console.error('翻页按钮未找到，无法更新状态');
+    }
 }
 
 /**
@@ -1107,6 +1203,9 @@ function toggleCategorySelection(event) {
  * @output 显示筛选后的交易记录
  */
 function applyFilters() {
+    // 重置页码
+    currentPage = 1;
+    
     // 获取选中的类型
     const selectedType = document.querySelector('.filter-type-btn.active').getAttribute('data-type');
     
@@ -1214,6 +1313,9 @@ function applyFilterModal() {
 function resetFilters() {
     try {
         console.log('重置所有筛选条件被调用');
+        
+        // 重置页码
+        currentPage = 1;
         
         // 重置筛选指示器
         const filterBtn = document.getElementById('filter-btn');

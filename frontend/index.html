@@ -181,9 +181,11 @@
             <!-- 交易记录列表 -->
             <div class="transaction-list-container">
                 <h2>交易记录</h2>
-                <!-- 交易记录过滤器 -->
-                <button id="filter-btn" class="btn btn-primary">筛选</button>
-                <button id="reset-filter-btn" class="btn btn-cancel" onclick="resetFilterModal()">重置</button>
+                <!-- 交易记录过滤器区域调整 -->
+                <div class="filter-buttons">
+                    <button id="filter-btn" class="btn btn-primary btn-small">筛选</button>
+                    <button id="reset-filter-btn" class="btn btn-cancel btn-small" onclick="resetFilterModal()">重置</button>
+                </div>
                 <div id="transaction-list" class="transaction-list">
                     <div class="transaction-item income">
                         <div class="transaction-info">
@@ -203,6 +205,13 @@
                 </div>
                 <div id="empty-list-message" class="empty-message hide">
                     <p>暂无交易记录</p>
+                </div>
+                
+                <!-- 翻页控件 -->
+                <div class="pagination">
+                    <button id="prev-page" type="button"><i class="fas fa-chevron-left"></i></button>
+                    <span id="page-info">第 1-5 条/共 <span id="total-count">0</span> 条</span>
+                    <button id="next-page" type="button"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
         </div>
@@ -247,6 +256,7 @@
     
     <script src="js/app.js"></script>
     <script src="js/charts.js"></script>
+    <script src="js/pagination.js"></script>
     
     <!-- 确认删除弹窗 -->
     <div id="confirm-dialog" class="confirm-dialog hide">
