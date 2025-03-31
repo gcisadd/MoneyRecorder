@@ -215,6 +215,10 @@ html, body {
     font-size: 24px;
 }
 
+.app-header-left {
+    display: flex;
+    align-items: center;
+}
 
 .user-info {
     display: flex;
